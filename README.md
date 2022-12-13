@@ -16,3 +16,4 @@ I'm solving the challenges when I wake up instead of when they unlock, so I'm ma
 | Day 10 | 14m 9s | 14m 51s | 29m 0s |
 | Day 11 | 25m 8s | 7m 0s | 32m 8s |
 | Day 12 | 15m 22s | 8m 45s | 24m 7s |
+| Day 13 | 31m 24s | 10m 47s | 42m 11s |
