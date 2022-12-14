@@ -1,6 +1,6 @@
 ## Advent of Code 2022
 
-I'm solving the challenges when I wake up instead of when they unlock, so I'm manually tracking the times from when I open the challenge to when I submit the solution.
+Tracking my solution times manually for curiosity to see how far behind I would be from the global leaderboards. The times are not from when the challenge unlocks, but from when I first open them.
 
 |  | Part 1 | Part 2 | Total |
 | - | - | - | - |
@@ -17,3 +17,4 @@ I'm solving the challenges when I wake up instead of when they unlock, so I'm ma
 | Day 11 | 25m 8s | 7m 0s | 32m 8s |
 | Day 12 | 15m 22s | 8m 45s | 24m 7s |
 | Day 13 | 31m 24s | 10m 47s | 42m 11s |
+| Day 14 | 22m 56s | 4m 17s | 27m 13s |
