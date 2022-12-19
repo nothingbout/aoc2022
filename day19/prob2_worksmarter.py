@@ -6,6 +6,23 @@ import math
 
 input_file = 'input.txt'
 
+def v_set(a, idx, value):
+    if idx < 0 or idx >= len(a): raise Exception(f'index out of bounds: len(a) == {len(a)}, idx == {idx}')
+    return a[0:idx] + (value,) + a[idx+1 : len(a)]
+def v_check(a, b):
+    if isinstance(b, tuple):
+        if len(a) != len(b): raise Exception(f'length mismatch: len(a) == {len(a)}, len(b) == {len(b)}')
+        return True
+    return False
+def v_add(a, b): return tuple(map(lambda x, y: x + y, a, b)) if v_check(a, b) else tuple(map(lambda x: x + b, a))
+def v_sub(a, b): return tuple(map(lambda x, y: x - y, a, b)) if v_check(a, b) else tuple(map(lambda x: x - b, a))
+def v_mul(a, b): return tuple(map(lambda x, y: x * y, a, b)) if v_check(a, b) else tuple(map(lambda x: x * b, a))
+def v_div(a, b): return tuple(map(lambda x, y: x / y, a, b)) if v_check(a, b) else tuple(map(lambda x: x / b, a))
+def v_floor(a): return tuple(map(math.floor, a))
+def v_ceil(a): return tuple(map(math.ceil, a))
+def v_min(a, b): return tuple(map(lambda x, y: min(x, y), a, b)) if v_check(a, b) else None
+def v_max(a, b): return tuple(map(lambda x, y: max(x, y), a, b)) if v_check(a, b) else None
+
 def parse_elements(input, whitelist):
     return [''.join(g) for _, g in filter(lambda g: g[0], itertools.groupby(input, key=lambda x: x in whitelist))]
 
@@ -29,61 +46,19 @@ def get_robot_cost(blueprint, n):
         case 3: return (blueprint[4], 0, blueprint[5], 0)
     raise "wtf"
 
-def mk_tuple(i, n):
-    match i:
-        case 0: return (n, 0, 0, 0)
-        case 1: return (0, n, 0, 0)
-        case 2: return (0, 0, n, 0)
-        case 3: return (0, 0, 0, n)
-
-def add_all(a, b):
-    return (
-        a[0] + b[0], 
-        a[1] + b[1], 
-        a[2] + b[2], 
-        a[3] + b[3])
-
-def sub_all(a, b):
-    return (
-        a[0] - b[0], 
-        a[1] - b[1], 
-        a[2] - b[2], 
-        a[3] - b[3])
-
-def mul_all(a, n):
-    return (
-        a[0] * n, 
-        a[1] * n, 
-        a[2] * n, 
-        a[3] * n)
-
-def min_all(a, b):
-    return (
-        min(a[0], b[0]), 
-        min(a[1], b[1]), 
-        min(a[2], b[2]), 
-        min(a[3], b[3]))
-
-def max_all(a, b):
-    return (
-        max(a[0], b[0]), 
-        max(a[1], b[1]), 
-        max(a[2], b[2]), 
-        max(a[3], b[3]))
-
-def all_greater_or_equal(a, b):
-    return a[0] >= b[0] and a[1] >= b[1] and a[2] >= b[2] and a[3] >= b[3]
+def v_all_greater_or_equal(a, b):
+    return functools.reduce(lambda x, y: x and y, map(lambda x, y: x >= y, a, b))
 
 def get_next_states(robot_costs, max_costs, robot_counts, resources):
     new_states = []
-    new_resources = add_all(resources, robot_counts)
+    new_resources = v_add(resources, robot_counts)
     useful_to_wait = False
     for robot in range(4):
         if robot_counts[robot] >= max_costs[robot]: continue
 
         cost = robot_costs[robot]
-        if all_greater_or_equal(resources, cost):
-            new_states.append( (add_all(robot_counts, mk_tuple(robot, 1)), sub_all(new_resources, cost)) )
+        if v_all_greater_or_equal(resources, cost):
+            new_states.append( (v_set(robot_counts, robot, robot_counts[robot] + 1), v_sub(new_resources, cost)) )
         else:
             for i in range(4):
                 if resources[i] < cost[i] and robot_counts[i] > 0: 
@@ -97,8 +72,8 @@ def get_next_states(robot_costs, max_costs, robot_counts, resources):
 
 def get_max_geode(blueprint, max_steps):
     robot_costs = [get_robot_cost(blueprint, n) for n in range(4)]
-    max_costs = functools.reduce(lambda a, b: max_all(a, b), robot_costs)
-    max_costs = max_all(max_costs, (0, 0, 0, 10000000))
+    max_costs = functools.reduce(lambda a, b: v_max(a, b), robot_costs)
+    max_costs = v_max(max_costs, (0, 0, 0, 10000000))
 
     current_states = [((1, 0, 0, 0), (0, 0, 0, 0))]
 
@@ -110,11 +85,11 @@ def get_max_geode(blueprint, max_steps):
 
         steps_remaining = max_steps - step - 1
         if steps_remaining > 0:
-            max_needed_resources = mul_all(max_costs, steps_remaining)
-            max_needed_resources = sub_all(max_needed_resources, mul_all(robot_counts, steps_remaining - 1))
+            max_needed_resources = v_mul(max_costs, steps_remaining)
+            max_needed_resources = v_sub(max_needed_resources, v_mul(robot_counts, steps_remaining - 1))
             for i in range(len(new_states)):
                 robot_counts, resources = new_states[i]
-                new_states[i] = (robot_counts, min_all(resources, max_needed_resources))
+                new_states[i] = (robot_counts, v_min(resources, max_needed_resources))
         
         new_states = list(set(new_states)) # remove duplicates
 
@@ -125,7 +100,7 @@ def get_max_geode(blueprint, max_steps):
                 if i == j: continue
                 robot_counts, resources = new_states[i]
                 other_robot_counts, other_resources = new_states[j]
-                if all_greater_or_equal(other_robot_counts, robot_counts) and all_greater_or_equal(other_resources, resources):
+                if v_all_greater_or_equal(other_robot_counts, robot_counts) and v_all_greater_or_equal(other_resources, resources):
                     strictly_worse = True
                     break
 
