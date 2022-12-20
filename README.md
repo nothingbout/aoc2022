@@ -23,3 +23,4 @@ Tracking my solution times manually for curiosity to see how far behind I would 
 | Day 17 | 43m 31s | 40m 32s | 1h 24m 3s |
 | Day 18 | 5m 27s | 21m 20s | 26m 47s |
 | Day 19 | 1h 11m 26s | 45m 31s | 1h 56m 57s |
+| Day 20 | 1h 45m 15s | 7m 52s | 1h 53m 7s |
