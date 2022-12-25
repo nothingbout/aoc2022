@@ -28,3 +28,4 @@ Tracking my solution times manually for curiosity to see how far behind I would 
 | Day 22 | 34m 48s | 2h 34m 41s | 3h 9m 29s |
 | Day 23 | 40m 47s | 3m 0s | 43m 47s |
 | Day 24 | 41m 50s | 8m 15s | 50m 5s |
+| Day 25 | 27m 40s | 1m 0s | 28m 40s |
